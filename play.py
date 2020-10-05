@@ -4,7 +4,7 @@ import numpy as np
 import torch as th
 from stable_baselines3 import PPO
 
-from env import SupportEnv, LegalActionWrapper, ImageToPyTorch, ScaledFloatFrame
+from env import Support_v0
 
 
 class App(tk.Tk):
@@ -45,10 +45,10 @@ class App(tk.Tk):
     def setup(self):
         self.done = False
         self.obs = self.env.reset()
-        cell_size = self.canvas.winfo_width() // self.env.width
+        cell_size = self.canvas.winfo_width() // self.env.board_size
         self.cells = {}
-        for i in range(self.env.height):
-            for j in range(self.env.width):
+        for i in range(self.env.board_size):
+            for j in range(self.env.board_size):
                 upperleft = (j * cell_size, i * cell_size)
                 lowerright = ((j + 1) * cell_size, (i + 1) * cell_size)
                 if self.env.model[i, j] > 0:
@@ -112,9 +112,7 @@ class App(tk.Tk):
 
 
 if __name__ == "__main__":
-    env = ScaledFloatFrame(
-        ImageToPyTorch(LegalActionWrapper(SupportEnv(8, zoffset=3, reward=0.2, penalty=0.01)))
-    )
+    env = Support_v0()
     model = PPO.load("./rl_model")
     app = App(env, model)
     app.geometry('800x800')
