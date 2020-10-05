@@ -29,7 +29,7 @@ def linear_schedule(initial_value, final_value):
 if __name__ == "__main__":
     seed = 0
     n_envs = 8
-    features_extractor_kwargs = dict(n_channel=64, n_block=12)
+    features_extractor_kwargs = dict(n_channel=64, n_block=16)
     optimizer_kwargs = dict(weight_decay=1e-4)
     ppo_kwargs = dict(
         learning_rate=linear_schedule(2.5e-4, 0.5e-4),

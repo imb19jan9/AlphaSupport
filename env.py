@@ -26,7 +26,7 @@ class Support_v0(gym.Env):
         # 4) the upper row
         # 5) the action row
         # 6) legal action
-        self.obs_shape = (self.board_size, self.board_size, 6)
+        self.obs_shape = (6, self.board_size, self.board_size)
 
         self.action_space = spaces.Discrete(self.board_size)
         self.observation_space = spaces.Box(0.0, 1.0, self.obs_shape, dtype=np.float32)
@@ -47,11 +47,11 @@ class Support_v0(gym.Env):
 
         if self.update_action_row():
             if self.action_row == self.board_size:
-                return np.ones(self.obs_shape, dtype=np.float32), -self.support_len(), True, {}
+                return np.ones(self.obs_shape, dtype=np.float32), -0.02*self.support_len(), True, {}
             else:
                 return self.obs(), self.reward, False, {}
         else:
-            return self.obs(), -self.reward / 100, False, {}
+            return self.obs(), -0.002*self.reward, False, {}
 
     def reset(self):
         filename = np.random.choice(self.filenames, 1)
@@ -127,7 +127,7 @@ class Support_v0(gym.Env):
                 self.action_row_feature(),
                 self.legal_action_feature(),
             ],
-            axis=2,
+            axis=0,
         ).astype(np.float32)
 
     def support_len(self):
