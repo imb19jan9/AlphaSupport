@@ -54,13 +54,16 @@ class Support_v0(gym.Env):
             return self.obs(), -0.002*self.reward, False, {}
 
     def reset(self):
-        filename = np.random.choice(self.filenames, 1)
-        img = Image.open(self.dataset_dir + filename[0]).convert("L")
-        self.model = np.array(img, dtype=np.bool)
-        self.support = np.zeros_like(self.model)
+        while True:
+            filename = np.random.choice(self.filenames, 1)
+            img = Image.open(self.dataset_dir + filename[0]).convert("L")
+            self.model = np.array(img, dtype=np.bool)
+            self.support = np.zeros_like(self.model)
 
-        self.action_row = 1
-        self.update_action_row()
+            self.action_row = 1
+            self.update_action_row()
+            if self.action_row != self.board_size:
+                break
 
         return self.obs()
 
