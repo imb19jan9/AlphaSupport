@@ -1,2 +1,5 @@
 /.vscode
 /rl_model.zip
+/__pycache__
+/logs
+/runs
