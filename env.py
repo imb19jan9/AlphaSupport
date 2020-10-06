@@ -47,7 +47,10 @@ class Support_v0(gym.Env):
 
         if self.update_action_row():
             if self.action_row == self.board_size:
-                return np.ones(self.obs_shape, dtype=np.float32), -0.02*self.support_len(), True, {}
+                ret = np.ones(self.obs_shape, dtype=np.float32)
+                ret[0] = self.model.astype(np.float32)
+                ret[1] = self.support.astype(np.float32)
+                return ret, -0.02*self.support_len(), True, {}
             else:
                 return self.obs(), self.reward, False, {}
         else:
