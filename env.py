@@ -14,10 +14,10 @@ class Support_v0(gym.Env):
     def __init__(self):
         super().__init__()
 
-        self.dataset_dir = "../size50/train/"
+        self.dataset_dir = "../size30/train/"
         _, _, self.filenames = next(os.walk(self.dataset_dir))
 
-        self.board_size = 50
+        self.board_size = 30
 
         # feature shape
         # 1) model
@@ -50,11 +50,11 @@ class Support_v0(gym.Env):
                 ret = np.ones(self.obs_shape, dtype=np.float32)
                 ret[0] = self.model.astype(np.float32)
                 ret[1] = self.support.astype(np.float32)
-                return ret, -0.02*self.support_len(), True, {}
+                return ret, max(-0.001*self.support_len(), -0.1), True, {}
             else:
-                return self.obs(), self.reward, False, {}
+                return self.obs(), -0.1, False, {}
         else:
-            return self.obs(), -0.002*self.reward, False, {}
+            return self.obs(), -0.1, False, {}
 
     def reset(self):
         while True:
@@ -140,7 +140,7 @@ class Support_v0(gym.Env):
         def get_neighbors(pos):
             # return 8-connected neighbors
             neighbors = []
-            for i in [-1, 0, 1]:
+            for i in [-1]:
                 for j in [-1, 0, 1]:
                     # continue self
                     if i == 0 and j == 0:
@@ -171,7 +171,7 @@ class Support_v0(gym.Env):
         label = {}
         length = defaultdict(float)
 
-        for i in range(self.board_size):
+        for i in reversed(range(self.board_size)):
             for j in range(self.board_size):
                 if self.support[i, j]:
                     if (i, j) in label.keys():
