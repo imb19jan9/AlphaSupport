@@ -50,7 +50,9 @@ class Support_v0(gym.Env):
                 ret = np.ones(self.obs_shape, dtype=np.float32)
                 ret[0] = self.model.astype(np.float32)
                 ret[1] = self.support.astype(np.float32)
-                return ret, max(-0.001*self.support_len(), -0.1), True, {}
+                rwd = -0.01*self.support_len()
+                rwd = rwd if 0.005*rwd > -0.1 else -0.1
+                return ret, rwd, True, {}
             else:
                 return self.obs(), -0.1, False, {}
         else:

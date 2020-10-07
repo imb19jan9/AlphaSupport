@@ -29,21 +29,21 @@ def linear_schedule(initial_value, final_value):
 if __name__ == "__main__":
     seed = 0
     n_envs = 8
-    features_extractor_kwargs = dict(n_channel=64, n_block=16)
+    features_extractor_kwargs = dict(n_channel=64, n_block=12)
     optimizer_kwargs = dict(weight_decay=1e-4)
     ppo_kwargs = dict(
-        learning_rate=linear_schedule(2.5e-4, 0.5e-4),
+        learning_rate=5e-5,
         n_steps=256,
         batch_size=64,
         n_epochs=10,
-        gamma=0.95,
+        gamma=0.995,
         gae_lambda=0.95,
-        clip_range=0.2,
-        clip_range_vf=0.2,
+        clip_range=0.1,
+        clip_range_vf=0.1,
         ent_coef=0.01,
         vf_coef=0.5,
         max_grad_norm=0.5,
-        target_kl=0.05,
+        target_kl=0.01,
         verbose=1,
         seed=seed
     )
@@ -73,10 +73,10 @@ if __name__ == "__main__":
     model.save("./logs/rl_model_0_steps")
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=int(2e5), save_path="./logs/", name_prefix="rl_model"
+        save_freq=int(5e4), save_path="./logs/", name_prefix="rl_model"
     )
     model.learn(
-        total_timesteps=int(1e7),
+        total_timesteps=int(3e6),
         reset_num_timesteps=False,
         callback=checkpoint_callback,
     )
