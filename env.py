@@ -11,13 +11,12 @@ from collections import defaultdict
 
 
 class Support_v0(gym.Env):
-    def __init__(self):
+    def __init__(self, dataset_dir, board_size):
         super().__init__()
 
-        self.dataset_dir = "../size30/train/"
+        self.board_size = board_size
+        self.dataset_dir = dataset_dir
         _, _, self.filenames = next(os.walk(self.dataset_dir))
-
-        self.board_size = 30
 
         # feature shape
         # 1) model
@@ -164,7 +163,7 @@ class Support_v0(gym.Env):
             dx = abs(pos2[0] - pos1[0])
             dy = abs(pos2[1] - pos1[1])
             if dx + dy > 1:
-                return math.sqrt(2)
+                return 2
             else:
                 return 1
 

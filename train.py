@@ -53,11 +53,16 @@ if __name__ == "__main__":
         features_extractor_kwargs=features_extractor_kwargs,
         optimizer_kwargs=optimizer_kwargs,
     )
+    env_kwargs = dict(
+        dataset_dir = "../size30/train/",
+        board_size = 30
+    )
 
     env = make_vec_env(
         Support_v0,
         n_envs,
-        seed=seed
+        seed=seed,
+        env_kwargs=env_kwargs
     )
 
     now = datetime.now()
@@ -73,7 +78,7 @@ if __name__ == "__main__":
     model.save("./logs/rl_model_0_steps")
 
     checkpoint_callback = CheckpointCallback(
-        save_freq=int(5e4), save_path="./logs/", name_prefix="rl_model"
+        save_freq=int(6e4), save_path="./logs/", name_prefix="rl_model"
     )
     model.learn(
         total_timesteps=int(3e6),
