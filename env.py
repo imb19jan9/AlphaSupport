@@ -50,7 +50,7 @@ class Support_v0(gym.Env):
             ret[0] = self.model.astype(np.float32)
             ret[1] = self.support.astype(np.float32)
 
-            support_len = max(100, self.support_len())
+            support_len = min(100, self.support_len())
             rwd = -0.001*support_len
             return ret, rwd, True, {}
         else:
