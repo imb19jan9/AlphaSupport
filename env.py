@@ -44,16 +44,15 @@ class Support_v0(gym.Env):
 
         self.support[self.action_row, action] = True
 
-        if self.update_action_row():
-            if self.action_row == self.board_size:
-                ret = np.ones(self.obs_shape, dtype=np.float32)
-                ret[0] = self.model.astype(np.float32)
-                ret[1] = self.support.astype(np.float32)
-                rwd = -0.01*self.support_len()
-                rwd = rwd if 0.005*rwd > -0.1 else -0.1
-                return ret, rwd, True, {}
-            else:
-                return self.obs(), -0.1, False, {}
+        self.update_action_row()
+        if self.action_row == self.board_size:
+            ret = np.ones(self.obs_shape, dtype=np.float32)
+            ret[0] = self.model.astype(np.float32)
+            ret[1] = self.support.astype(np.float32)
+
+            support_len = max(100, self.support_len())
+            rwd = -0.001*support_len
+            return ret, rwd, True, {}
         else:
             return self.obs(), -0.1, False, {}
 
