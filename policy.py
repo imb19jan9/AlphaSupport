@@ -62,9 +62,9 @@ class MyActorCriticPolicy(BasePolicy):
 
     def _build(self, lr_schedule: Callable[[float], float]) -> None:
         zero_input = th.zeros(1, *self.observation_space.shape)
-        feature_shape = self.features_extractor(zero_input).squeeze(0).shape
-        self.action_net = Res_PolicyHead(feature_shape, self.action_space.n)
-        self.value_net = Res_ValueHead(feature_shape, hidden_dim=self.valuehead_hidden)
+        feature_dim = self.features_extractor(zero_input).squeeze(0).shape[0]
+        self.action_net = Res_PolicyHead(feature_dim, self.action_space.n)
+        self.value_net = Res_ValueHead(feature_dim, hidden_dim=self.valuehead_hidden)
         self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
 
     def forward(self, obs: th.Tensor, deterministic: bool = False) -> Tuple[th.Tensor, th.Tensor, th.Tensor]:
