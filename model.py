@@ -55,63 +55,44 @@ class ResFeatureExtractor(BaseFeaturesExtractor):
             layers.append(ResidualBlock(n_channel))
         self.res_block = nn.Sequential(*layers)
 
+        self.conv_out = nn.Sequential(
+            nn.Conv2d(n_channel, 1, kernel_size=1, bias=False),
+            nn.BatchNorm2d(1),
+            nn.ReLU(),
+            nn.Flatten(),
+        )
+
         self.conv_in.apply(init_weights)
         self.res_block.apply(init_weights)
+        self.conv_out.apply(init_weights)
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
         x = self.conv_in(observations)
-        return self.res_block(x)
+        x = self.res_block(x)
+        return self.conv_out(x)
 
 
 class Res_ValueHead(nn.Module):
-    def __init__(self, feature_shape, hidden_dim=32):
+    def __init__(self, feature_dim, hidden_dim=512):
         super(Res_ValueHead, self).__init__()
 
-        self.net1 = nn.Sequential(
-            nn.Conv2d(feature_shape[0], 1, kernel_size=1, bias=False),
-            nn.BatchNorm2d(1),
-            nn.ReLU(),
-            nn.Flatten(),
+        self.net = nn.Sequential(
+            nn.Linear(feature_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, 1)
         )
 
-        n_flatten = self._get_conv_val_size(feature_shape)
-        self.net2 = nn.Sequential(
-            nn.Linear(n_flatten, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, 1)
-        )
-
-        self.net1.apply(init_weights)
-        self.net2.apply(init_weights)
-
-    def _get_conv_val_size(self, shape):
-        with th.no_grad():
-            o = self.net1(th.zeros(1, *shape))
-        return int(np.prod(o.size()))
+        self.net.apply(init_weights)
 
     def forward(self, x):
-        return self.net2(self.net1(x))
+        return self.net(x)
 
 
 class Res_PolicyHead(nn.Module):
-    def __init__(self, feature_shape, n_actions):
+    def __init__(self, feature_dim, n_actions):
         super(Res_PolicyHead, self).__init__()
 
-        self.net1 = nn.Sequential(
-            nn.Conv2d(feature_shape[0], 1, kernel_size=1, bias=False),
-            nn.BatchNorm2d(1),
-            nn.ReLU(),
-            nn.Flatten(),
-        )
+        self.net = nn.Sequential(nn.Linear(feature_dim, n_actions))
 
-        n_flatten = self._get_conv_policy_size(feature_shape)
-        self.net2 = nn.Sequential(nn.Linear(n_flatten, n_actions))
-
-        self.net1.apply(init_weights)
-        self.net2.apply(init_weights)
-
-    def _get_conv_policy_size(self, shape):
-        with th.no_grad():
-            o = self.net1(th.zeros(1, *shape))
-        return int(np.prod(o.size()))
+        self.net.apply(init_weights)
 
     def forward(self, x):
-        return self.net2(self.net1(x))
+        return self.net(x)
