@@ -1,8 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+
 import numpy as np
 import torch as th
 from stable_baselines3 import PPO
+
+import argparse
 
 from env import Support_v0
 
@@ -112,8 +115,12 @@ class App(tk.Tk):
 
 
 if __name__ == "__main__":
-    env = Support_v0()
-    model = PPO.load("./rl_model")
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--name', type=str, default='rl_model')
+    args = parser.parse_args()
+
+    env = Support_v0(dataset_dir = "../size30/train/", board_size = 30)
+    model = PPO.load(args.name)
     app = App(env, model)
     app.geometry('800x800')
     app.resizable(width=False, height=False)
