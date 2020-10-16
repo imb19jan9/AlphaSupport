@@ -62,10 +62,6 @@ class ResFeatureExtractor(BaseFeaturesExtractor):
             nn.Flatten(),
         )
 
-        self.conv_in.apply(init_weights)
-        self.res_block.apply(init_weights)
-        self.conv_out.apply(init_weights)
-
     def forward(self, observations: th.Tensor) -> th.Tensor:
         x = self.conv_in(observations)
         x = self.res_block(x)
@@ -80,8 +76,6 @@ class Res_ValueHead(nn.Module):
             nn.Linear(feature_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, 1)
         )
 
-        self.net.apply(init_weights)
-
     def forward(self, x):
         return self.net(x)
 
@@ -91,8 +85,6 @@ class Res_PolicyHead(nn.Module):
         super(Res_PolicyHead, self).__init__()
 
         self.net = nn.Sequential(nn.Linear(feature_dim, n_actions))
-
-        self.net.apply(init_weights)
 
     def forward(self, x):
         return self.net(x)
