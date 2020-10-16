@@ -20,7 +20,6 @@ class MyActorCriticPolicy(BasePolicy):
         action_space: gym.spaces.Space,
         lr_schedule: Callable,
         valuehead_hidden,
-        device: Union[th.device, str] = "auto",
         use_sde: bool = False,
         features_extractor_class: Type[BaseFeaturesExtractor] = ResFeatureExtractor,
         features_extractor_kwargs: Optional[Dict[str, Any]] = None,
@@ -28,11 +27,10 @@ class MyActorCriticPolicy(BasePolicy):
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):
         super().__init__(
-            observation_space,
-            action_space,
-            device,
-            features_extractor_class,
-            features_extractor_kwargs,
+            observation_space=observation_space,
+            action_space=action_space,
+            features_extractor_class=features_extractor_class,
+            features_extractor_kwargs=features_extractor_kwargs,
             optimizer_class=optimizer_class,
             optimizer_kwargs=optimizer_kwargs,
             squash_output=False,
