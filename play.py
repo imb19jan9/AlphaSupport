@@ -7,7 +7,7 @@ from stable_baselines3 import PPO
 
 import argparse
 
-from env import Support_v0
+from env import Support_v0, Support_v1
 
 
 class App(tk.Tk):
@@ -117,9 +117,15 @@ class App(tk.Tk):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--name', type=str, default='rl_model')
+    parser.add_argument('--env', type=str, default='v0')
     args = parser.parse_args()
 
-    env = Support_v0(dataset_dir = "../size30/train/", board_size = 30)
+    if args.env == 'v0':
+        env_cls = Support_v0
+    else:
+        env_cls = Support_v1
+    env = env_cls(dataset_dir = "../size30/train/", board_size = 30)
+    
     model = PPO.load(args.name)
     app = App(env, model)
     app.geometry('800x800')
