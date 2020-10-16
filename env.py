@@ -218,7 +218,7 @@ class Support_v1(gym.Env):
         self.support[self.action_row, action] = True
 
         is_straight = self.support[self.action_row-1, action]
-        rwd = -0.095 if is_straight else -0.1
+        rwd = -0.1 if is_straight else -0.1
 
         self.update_action_row()
         if self.action_row == self.board_size:
