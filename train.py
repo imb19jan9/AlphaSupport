@@ -4,7 +4,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.cmd_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
 
-from env import Support_v0
+from env import Support_v0, Support_v1
 from policy import MyActorCriticPolicy
 from model import ResFeatureExtractor
 
@@ -29,14 +29,14 @@ def linear_schedule(initial_value, final_value):
 if __name__ == "__main__":
     seed = 0
     n_envs = 8
-    features_extractor_kwargs = dict(n_channel=64, n_block=12)
-    optimizer_kwargs = dict(weight_decay=1e-4)
+    features_extractor_kwargs = dict(n_channel=64, n_block=10)
+    optimizer_kwargs = dict(weight_decay=0)
     ppo_kwargs = dict(
         learning_rate=5e-5,
         n_steps=256,
         batch_size=64,
         n_epochs=10,
-        gamma=0.995,
+        gamma=1.0,
         gae_lambda=0.95,
         clip_range=0.1,
         clip_range_vf=0.1,
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     )
 
     env = make_vec_env(
-        Support_v0,
+        Support_v1,
         n_envs,
         seed=seed,
         env_kwargs=env_kwargs
