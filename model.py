@@ -69,7 +69,7 @@ class ResFeatureExtractor(BaseFeaturesExtractor):
 
 
 class Res_ValueHead(nn.Module):
-    def __init__(self, feature_dim, hidden_dim=512):
+    def __init__(self, feature_dim, hidden_dim):
         super(Res_ValueHead, self).__init__()
 
         self.net = nn.Sequential(

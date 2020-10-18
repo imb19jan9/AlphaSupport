@@ -19,8 +19,8 @@ class MyActorCriticPolicy(BasePolicy):
         observation_space: gym.spaces.Space,
         action_space: gym.spaces.Space,
         lr_schedule: Callable,
-        valuehead_hidden,
         use_sde: bool = False,
+        valuehead_hidden = 512,
         features_extractor_class: Type[BaseFeaturesExtractor] = ResFeatureExtractor,
         features_extractor_kwargs: Optional[Dict[str, Any]] = None,
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
@@ -33,7 +33,6 @@ class MyActorCriticPolicy(BasePolicy):
             features_extractor_kwargs=features_extractor_kwargs,
             optimizer_class=optimizer_class,
             optimizer_kwargs=optimizer_kwargs,
-            squash_output=False,
         )
 
         self.features_extractor = features_extractor_class(self.observation_space, **self.features_extractor_kwargs)
