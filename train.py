@@ -29,11 +29,11 @@ def linear_schedule(initial_value, final_value):
 if __name__ == "__main__":
     seed = 0
     n_envs = 32
-    features_extractor_kwargs = dict(n_channel=64, n_block=10)
+    features_extractor_kwargs = dict(n_channel=64, n_block=14)
     optimizer_kwargs = dict(weight_decay=1e-4)
     ppo_kwargs = dict(
         learning_rate=5e-5,
-        n_steps=32,
+        n_steps=16,
         batch_size=64,
         n_epochs=4,
         gamma=1.0,
@@ -53,8 +53,8 @@ if __name__ == "__main__":
         optimizer_kwargs=optimizer_kwargs,
     )
     env_kwargs = dict(
-        dataset_dir = "../size30/train/",
-        board_size = 30
+        dataset_dir = "../size50/train/",
+        board_size = 50
     )
 
     env = make_vec_env(
@@ -74,14 +74,5 @@ if __name__ == "__main__":
         policy_kwargs=policy_kwargs,
     )
     print(model.policy)
-    model.save("./logs/rl_model_0_steps")
-
-    checkpoint_callback = CheckpointCallback(
-        save_freq=int(6e4), save_path="./logs/", name_prefix="rl_model"
-    )
-    model.learn(
-        total_timesteps=int(3e6),
-        reset_num_timesteps=False,
-        callback=checkpoint_callback,
-    )
-    model.save("./logs/rl_model_last")
+    model.learn(total_timesteps=int(5e6))
+    model.save("./logs/rl_model")
