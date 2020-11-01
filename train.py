@@ -29,12 +29,12 @@ def linear_schedule(initial_value, final_value):
 if __name__ == "__main__":
     seed = 0
     n_envs = 32
-    features_extractor_kwargs = dict(n_channel=64, n_block=14)
+    features_extractor_kwargs = dict(n_channel=64, n_block=20)
     optimizer_kwargs = dict(weight_decay=1e-4)
     ppo_kwargs = dict(
         learning_rate=5e-5,
         n_steps=16,
-        batch_size=64,
+        batch_size=32,
         n_epochs=4,
         gamma=1.0,
         gae_lambda=0.95,
@@ -74,5 +74,5 @@ if __name__ == "__main__":
         policy_kwargs=policy_kwargs,
     )
     print(model.policy)
-    model.learn(total_timesteps=int(5e6))
+    model.learn(total_timesteps=int(1e7))
     model.save("./logs/rl_model")

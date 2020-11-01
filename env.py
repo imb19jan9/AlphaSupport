@@ -39,12 +39,18 @@ class Support_v0(gym.Env):
         if not self.is_valid_action(action):
             return self.obs(), -9999.0, False, {}
 
+        prev_unsupported = self.unsupported
         self.support[self.action_row, action] = True
 
-        is_straight = self.support[self.action_row-1, action]
-        rwd = -0.1 if is_straight else -0.1
+        # is_straight = self.support[self.action_row-1, action]
+        # rwd = -0.1 if is_straight else -0.1
 
-        self.update_action_row()
+        if self.update_action_row():
+            rwd = 5
+        else:
+            delta = prev_unsupported - self.unsupported
+            rwd = -10 if delta == 0 else delta 
+
         if self.action_row == self.board_size:
             return self.obs(True), rwd, True, {}
         else:
@@ -64,20 +70,21 @@ class Support_v0(gym.Env):
 
         return self.obs()
 
-    def _is_stable(self, row):
+    def count_unsupported(self, row):
         upper = np.logical_or(self.model[row, :], self.support[row, :])
         lower = np.logical_or(self.model[row + 1, :], self.support[row + 1, :])
 
         dilated = ndimage.binary_dilation(lower)
 
         res = np.logical_and(upper, np.logical_not(dilated))
-        supported = not res.any()
-        return supported
+        unsupported = np.sum(res)
+        return unsupported
 
     def update_action_row(self):
         action_row_change = False
         while self.action_row < self.board_size:
-            if self._is_stable(self.action_row - 1):
+            self.unsupported = self.count_unsupported(self.action_row - 1)
+            if self.unsupported == 0:
                 self.action_row += 1
                 action_row_change = True
             else:
