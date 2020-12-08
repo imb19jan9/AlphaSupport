@@ -18,13 +18,11 @@ class Support_v0(gym.Env):
         _, _, self.filenames = next(os.walk(self.dataset_dir))
 
         # feature shape
-        # 1) model
-        # 2) support
-        # 2) empty positions lower than the action row
-        # 3) the upper row
-        # 5) the action row
-        # 6) legal action
-        self.obs_shape = (6, self.board_size, self.board_size)
+        # 1) empty positions lower than the action row
+        # 2) the upper row
+        # 3) the action row
+        # 4) legal action
+        self.obs_shape = (4, self.board_size, self.board_size)
 
         self.action_space = spaces.Discrete(self.board_size)
         self.observation_space = spaces.Box(0.0, 1.0, self.obs_shape, dtype=np.float32)
@@ -39,17 +37,29 @@ class Support_v0(gym.Env):
         if not self.is_valid_action(action):
             return self.obs(), -9999.0, False, {}
 
-        prev_unsupported = self.unsupported
         self.support[self.action_row, action] = True
 
-        # is_straight = self.support[self.action_row-1, action]
-        # rwd = -0.1 if is_straight else -0.1
+        # if self.update_action_row():
+        #     rwd = prev_unsupported-1
+        # else:
+        #     delta = prev_unsupported - self.unsupported
+        #     rwd = -100 if delta == 0 else delta-1
 
-        if self.update_action_row():
-            rwd = 5
-        else:
-            delta = prev_unsupported - self.unsupported
-            rwd = -10 if delta == 0 else delta 
+        is_straight = self.support[self.action_row-1, action]
+        rwd = -0.05
+        rwd = rwd+0.05 if is_straight else rwd
+        self.update_action_row()
+
+        # if self.update_action_row():
+        #     rwd = 0 if prev_unsupported == 1 else 0.01
+        # else:
+        #     delta = prev_unsupported - self.unsupported
+        #     if delta == 0:
+        #         rwd = -0.2
+        #     elif delta == 1:
+        #         rwd = 0
+        #     else:
+        #         rwd = 0.01
 
         if self.action_row == self.board_size:
             return self.obs(True), rwd, True, {}
@@ -134,13 +144,13 @@ class Support_v0(gym.Env):
 
     def obs(self, terminal=False):
         ret = np.zeros(self.obs_shape, dtype=np.bool)
-        ret[0] = self.model
-        ret[1] = self.support
+        # ret[0] = self.model
+        # ret[1] = self.support
         if not terminal:
-            ret[2] = self.empty_position_feature()
-            ret[3] = self.upper_row_feature()
-            ret[4] = self.action_row_feature()
-            ret[5] = self.legal_action_feature()
+            ret[0] = self.empty_position_feature()
+            ret[1] = self.upper_row_feature()
+            ret[2] = self.action_row_feature()
+            ret[3] = self.legal_action_feature()
         return ret.astype(np.float32)
 
 if __name__ == "__main__":
