@@ -6,20 +6,26 @@ import numpy as np
 
 from stl import mesh
 
-def extrude(img):
+def extrude(model, support):
+    img = np.logical_or(model, support)
     n_faces = np.count_nonzero(img)*2
     m = mesh.Mesh(np.zeros(n_faces, dtype=mesh.Mesh.dtype))
     n_row, n_col = img.shape
 
-    step = 1/25
+    step = 1.0
     points = []
     for row in range(n_row):
         for col in range(n_col):
-            if not img[row, col]:
+            if not model[row, col] and not support[row, col]:
                 continue
 
-            xl = -1+col*step
-            xr = -1+(col+1)*step
+            if support[row, col]:
+                margin = 0.4
+            else:
+                margin = 0.0
+
+            xl = -1+col*step - margin
+            xr = -1+(col+1)*step + margin
             yt = 1-row*step
             yb = 1-(row+1)*step
 
